@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import JwtPayload from "../models/entities/user/jwt-payload.model";
 import AuthenticationUtils from "../utils/auth/authentication.utils";
 import { User } from "../models/entities/user/user.model";
-import { AsyncLocalStorageUtils } from "@trading-journal/async-local-storage";
-import { HTTPMethods } from "@trading-journal/base-models";
+import HTTPMethods from "../models/shared/enums/http-methods.enum";
+import AsyncLocalStorageUtils from "../utils/async-local-storage/async-local-storage.utils";
 
 const allowedRoutes = [
     { method: HTTPMethods.POST, url: '/api/users' },

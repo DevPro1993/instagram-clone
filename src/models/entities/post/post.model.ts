@@ -31,12 +31,15 @@ export class Post extends Model<InferAttributes<Post>, InferCreationAttributes<P
     declare userId: number;
 
     @HasMany(() => Comment, {
-        foreignKey: 'postId',
+        foreignKey: {
+            name: 'postId',
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
+        },
         inverse: {
             as: 'post',
         },
     })
     declare comments?: NonAttribute<Comment[]>;
-
 
 }

@@ -39,7 +39,13 @@ async function startServer(app: Express) {
 
   console.log('Connection has been established successfully.');
 
-  await db.sync({ force: process.env.DB_RESET === "true" });
+  if (process.env.DB_RESET === "true") {
+    await db.query("SET FOREIGN_KEY_CHECKS = 0");
+    await db.sync({ force: true });
+    await db.query("SET FOREIGN_KEY_CHECKS = 1");
+  } else {
+    await db.sync({ force: false });
+  }
 
   console.log(`Models synced successfully. force = ${process.env.DB_RESET}`);
 

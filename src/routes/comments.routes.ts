@@ -1,22 +1,18 @@
 import express, { Router } from "express";
-import container from "../inversify/container.inversify";
-import DITokens from "../inversify/di-tokens.inversify";
-
+import { CreateCommentDtoSchema, EditCommentDtoSchema } from "../models/dtos/comment/create-or-edit-comment.dto";
+import validatePayload from "../middlewares/payload-validation.middleware";
+import { CommentController } from "../controllers/comment/comment.controller";
 
 
 const router: Router = express.Router();
 
-// const commentsRouter = container.get<ICommentController>(DITokens.ICommentController)
 
-// router.get('/', postController.getAll)
-// router.get('/feed', postController.getAllPostsForFeed)
-// router.post('/like/:id', postController.likePost)
-// router.post('/unlike/:id', postController.unlikePost)
-// router.get('/:id', postController.getById)
-// router.post('/', validatePayload(CreatePostDtoSchema), postController.save)
-// router.put('/:id', validatePayload(EditPostDtoSchema), postController.update)
-// router.delete('/', postController.bulkDelete)
-// router.delete('/:id', postController.delete)
+router.get('/:postId', CommentController.getAllCommentsForPost)
+router.post('/like/:id', CommentController.likeComment)
+router.post('/unlike/:id', CommentController.unlikeComment)
+router.post('/:postId', validatePayload(CreateCommentDtoSchema), CommentController.save)
+router.put('/:id', validatePayload(EditCommentDtoSchema), CommentController.update)
+router.delete('/:id', CommentController.delete)
 
 
 export const commentsRouter = router;

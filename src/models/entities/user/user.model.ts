@@ -112,6 +112,10 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   })
   declare likedComments?: NonAttribute<Comment[]>;
 
+  declare addLikedComments: BelongsToManyAddAssociationsMixin<Comment,Comment['id']>;
+
+  declare removeLikedComments: BelongsToManyRemoveAssociationsMixin<Comment, Comment['id']>;
+
   // Following
 
   @BelongsToMany(() => User, {
