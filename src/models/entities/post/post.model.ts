@@ -2,6 +2,7 @@ import { Model, InferAttributes, InferCreationAttributes, DataTypes, CreationOpt
 import { Attribute, PrimaryKey, AutoIncrement, NotNull, Table, HasMany } from '@sequelize/core/decorators-legacy';
 import { User } from '../user/user.model';
 import { Comment } from '../comment/comment.model';
+import { PostImage } from '../post-image/post-image.model';
 
 
 @Table({
@@ -41,5 +42,17 @@ export class Post extends Model<InferAttributes<Post>, InferCreationAttributes<P
         },
     })
     declare comments?: NonAttribute<Comment[]>;
+
+    @HasMany(() => PostImage, {
+        foreignKey: {
+            name: 'postId',
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
+        },
+        inverse: {
+            as: 'post',
+        },
+    })
+    declare postImages?: NonAttribute<PostImage[]>;
 
 }

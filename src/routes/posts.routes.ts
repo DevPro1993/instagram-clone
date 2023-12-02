@@ -1,6 +1,6 @@
 import express, { Router } from "express";
 import validatePayload from "../middlewares/payload-validation.middleware";
-import { PostController } from "../controllers/post/post.controller";
+import { PostController } from "../controllers/post.controller";
 import { CreatePostDtoSchema, EditPostDtoSchema } from "../models/dtos/post/create-or-edit-post.dto";
 
 

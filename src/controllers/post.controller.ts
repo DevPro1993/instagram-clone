@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { Post } from "../../models/entities/post/post.model";
-import { User } from "../../models/entities/user/user.model";
-import AsyncLocalStorageUtils from "../../utils/async-local-storage/async-local-storage.utils";
-import { PostDto } from "../../models/dtos/post/post.dto";
-import { CreatePostDto, EditPostDto } from "../../models/dtos/post/create-or-edit-post.dto";
+import { Post } from "../models/entities/post/post.model";
+import { User } from "../models/entities/user/user.model";
+import AsyncLocalStorageUtils from "../utils/async-local-storage/async-local-storage.utils";
+import { PostDto } from "../models/dtos/post/post.dto";
+import { CreatePostDto, EditPostDto } from "../models/dtos/post/create-or-edit-post.dto";
 import { Op } from "@sequelize/core";
 
 
@@ -58,7 +58,7 @@ export class PostController {
             const createPostDto = req.body as CreatePostDto;
             const post = Post.build({ ...createPostDto, userId });
             const newPost: Post = await post.save();;
-            return res.status(201).send(newPost.id);
+            return res.status(201).send({ id: newPost.id });
         } catch (error: any) {
             res.status(500).send({ message: error.message })
         }

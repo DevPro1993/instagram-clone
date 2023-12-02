@@ -1,7 +1,7 @@
 import express, { Router } from "express";
 import { CreateCommentDtoSchema, EditCommentDtoSchema } from "../models/dtos/comment/create-or-edit-comment.dto";
 import validatePayload from "../middlewares/payload-validation.middleware";
-import { CommentController } from "../controllers/comment/comment.controller";
+import { CommentController } from "../controllers/comment.controller";
 
 
 const router: Router = express.Router();

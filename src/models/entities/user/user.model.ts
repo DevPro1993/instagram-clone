@@ -92,6 +92,30 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
 
   declare removeLikedPosts: BelongsToManyRemoveAssociationsMixin<Post, Post['id']>;
 
+  // BookmarkedPosts
+
+  @BelongsToMany(() => Post, {
+    foreignKey: {
+      name: 'userId',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE'
+    },
+    otherKey: {
+      name: 'postId',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE'
+    },
+    through: 'BookmarkedPosts',
+    inverse: {
+      as: 'bookmarkedByUsers',
+    },
+  })
+  declare bookmarkedPosts?: NonAttribute<Post[]>;
+
+  declare addBookmarkedPosts: BelongsToManyAddAssociationsMixin<Post,Post['id']>;
+
+  declare removeBookmarkedPosts: BelongsToManyRemoveAssociationsMixin<Post, Post['id']>;
+
   // LikedComments
 
   @BelongsToMany(() => Comment, {
@@ -135,6 +159,10 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
     },
   })
   declare following?: NonAttribute<User[]>;
+
+  declare addFollowing: BelongsToManyAddAssociationsMixin<User,User['id']>;
+
+  declare removeFollowing: BelongsToManyRemoveAssociationsMixin<User, User['id']>;
 
   declare followers?: NonAttribute<User[]>;
 

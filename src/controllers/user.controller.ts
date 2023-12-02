@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { User } from "../../models/entities/user/user.model";
-import { CreateUserDto } from "../../models/dtos/users/create-user.dto";
-import { AuthResponseDto } from "../../models/dtos/users/auth-response.dto";
-import AuthenticationUtils from "../../utils/auth/authentication.utils";
-import { LoginUserDto } from "../../models/dtos/users/login-user.dto";
+import { User } from "../models/entities/user/user.model";
+import { CreateUserDto } from "../models/dtos/users/create-user.dto";
+import { AuthResponseDto } from "../models/dtos/users/auth-response.dto";
+import AuthenticationUtils from "../utils/auth/authentication.utils";
+import { LoginUserDto } from "../models/dtos/users/login-user.dto";
 
 export class UserController {
 

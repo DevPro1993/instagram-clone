@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { CommentDto } from "../../models/dtos/comment/comment.dto";
-import AsyncLocalStorageUtils from "../../utils/async-local-storage/async-local-storage.utils";
-import { Comment } from "../../models/entities/comment/comment.model";
-import { CreateCommentDto, EditCommentDto } from "../../models/dtos/comment/create-or-edit-comment.dto";
-import { User } from "../../models/entities/user/user.model";
+import { CommentDto } from "../models/dtos/comment/comment.dto";
+import AsyncLocalStorageUtils from "../utils/async-local-storage/async-local-storage.utils";
+import { Comment } from "../models/entities/comment/comment.model";
+import { CreateCommentDto, EditCommentDto } from "../models/dtos/comment/create-or-edit-comment.dto";
+import { User } from "../models/entities/user/user.model";
 
 
 
