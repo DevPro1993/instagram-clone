@@ -9,12 +9,14 @@ import { Op } from "@sequelize/core";
 
 export class PostController {
 
-    static toDto(post: Post): PostDto {
+    static toDto(post: Post, bookmarked?: boolean): PostDto {
         const currentUserId = AsyncLocalStorageUtils.getLoggedInUserId();
         return {
             id: post.id,
             text: post.text,
-            likedByMe: !!post.likedByUsers?.map(r => r.id).includes(currentUserId)
+            likedByMe: !!post.likedByUsers?.map(r => r.id).includes(currentUserId),
+            bookmarkedByMe: bookmarked || !!post.bookmarkedByUsers?.map(r => r.id).includes(currentUserId),
+            createdAt: post.createdAt
         }
     }
 
@@ -23,6 +25,22 @@ export class PostController {
         try {
             // find all people current user is following
             const userId = AsyncLocalStorageUtils.getLoggedInUserId();
+            if (req.query.bookmarked === 'true') {
+                const user = await User.findByPk(userId, {
+                    include: [
+                        {
+                            association: 'bookmarkedPosts',
+                            include: [
+                                {
+                                    association: 'likedByUsers'
+                                }
+                            ]
+                        }
+                    ]
+                }) as User;
+                const posts = user.bookmarkedPosts || [];
+                return res.send(posts.map(p => PostController.toDto(p, true)))
+            }
             const user = await User.findByPk(userId, {
                 include: [
                     {
@@ -34,12 +52,18 @@ export class PostController {
                                 include: [
                                     {
                                         association: 'likedByUsers'
+                                    },
+                                    {
+                                        association: 'bookmarkedByUsers'
                                     }
                                 ]
                             }
                         ]
                     }
-                ]
+                ],
+                order: [
+                    ['following', 'posts', 'createdAt', 'DESC'],
+                ],
             });
             if (!user) throw new Error("No following found for the user");
             const usersFollowing = user.following as User[];
@@ -104,6 +128,36 @@ export class PostController {
                 include: [{ association: 'likedPosts' }]
             }) as User;
             await user.removeLikedPosts([parseInt(postId)]);
+            return res.sendStatus(201)
+        } catch (error: any) {
+            res.status(500).send({ message: error.message })
+        }
+    }
+
+    static bookmarkPost = async (req: Request, res: Response) => {
+        try {
+            const postId = req.params.id;
+            if (!postId) throw new Error("Post id missing")
+            const currentUserId = AsyncLocalStorageUtils.getLoggedInUserId();
+            const user = await User.findByPk(currentUserId, {
+                include: [{ association: 'bookmarkedPosts' }]
+            }) as User;
+            await user.addBookmarkedPosts([parseInt(postId)]);
+            return res.sendStatus(201)
+        } catch (error: any) {
+            res.status(500).send({ message: error.message })
+        }
+    }
+
+    static unbookmarkPost = async (req: Request, res: Response) => {
+        try {
+            const postId = req.params.id;
+            if (!postId) throw new Error("Post id missing")
+            const currentUserId = AsyncLocalStorageUtils.getLoggedInUserId();
+            const user = await User.findByPk(currentUserId, {
+                include: [{ association: 'bookmarkedPosts' }]
+            }) as User;
+            await user.removeBookmarkedPosts([parseInt(postId)]);
             return res.sendStatus(201)
         } catch (error: any) {
             res.status(500).send({ message: error.message })

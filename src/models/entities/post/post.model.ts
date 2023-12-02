@@ -7,9 +7,13 @@ import { PostImage } from '../post-image/post-image.model';
 
 @Table({
     tableName: 'posts',
-    underscored: true
+    underscored: true,
 })
 export class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
+
+    declare createdAt: CreationOptional<Date>;
+
+    declare updatedAt: CreationOptional<Date>;
 
     @Attribute(DataTypes.INTEGER)
     @PrimaryKey
@@ -24,6 +28,8 @@ export class Post extends Model<InferAttributes<Post>, InferCreationAttributes<P
     // This is the foreign key
 
     declare likedByUsers?: NonAttribute<User[]>;
+    
+    declare bookmarkedByUsers?: NonAttribute<User[]>;
 
     declare user: NonAttribute<User>;
 
