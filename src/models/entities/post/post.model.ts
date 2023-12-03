@@ -49,10 +49,6 @@ export class Post extends Model<InferAttributes<Post>, InferCreationAttributes<P
     })
     declare comments?: NonAttribute<Comment[]>;
 
-    declare addComments: HasManyAddAssociationsMixin<Comment, Comment['id']>;
-
-    declare removeComments: HasManyRemoveAssociationsMixin<Comment, Comment['id']>;
-
     @HasMany(() => PostImage, {
         foreignKey: {
             name: 'postId',
@@ -64,9 +60,5 @@ export class Post extends Model<InferAttributes<Post>, InferCreationAttributes<P
         },
     })
     declare postImages?: NonAttribute<PostImage[]>;
-
-    declare addPostImages: HasManyAddAssociationsMixin<PostImage, PostImage['id']>;
-    
-    declare removePostImages: HasManyRemoveAssociationsMixin<PostImage, PostImage['id']>;
 
 }

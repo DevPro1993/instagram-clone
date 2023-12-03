@@ -19,7 +19,7 @@ export class PostController {
             likedByMe: !!post.likedByUsers?.map(r => r.id).includes(currentUserId),
             bookmarkedByMe: bookmarked || !!post.bookmarkedByUsers?.map(r => r.id).includes(currentUserId),
             createdAt: post.createdAt,
-            imageUrls: post.postImages?.map(({ fileId, url }) => ({ fileId, url }))
+            imageUrls: post.postImages?.map(({ fileId, url, id }) => ({ fileId, url, id }))
         }
     }
 
@@ -90,11 +90,22 @@ export class PostController {
             const userId = AsyncLocalStorageUtils.getLoggedInUserId();
             const createPostDto = req.body as CreatePostDto;
             const post = await Post.create({ text: createPostDto.text, userId });
-            if (createPostDto.imageTitles?.length) {
-                const postImages = (createPostDto.imageTitles).map(({ url, fileId }) => PostImage.build({ postId: post.id, url, fileId }))
-                await post.addPostImages(postImages)
+            if (createPostDto.images?.length) {
+                console.log(createPostDto.images)
+                await PostImage.bulkCreate((createPostDto.images).map(({ url, fileId }) => ({ postId: post.id, url, fileId })))
             }
             return res.status(201).send({ postId: post.id });
+        } catch (error: any) {
+            res.status(500).send({ message: error.message })
+        }
+    }
+
+    static removeImagesFromPost = async (req: Request, res: Response) => {
+        try {
+            const { fileId } = req.params;
+            await imagekit.deleteFile(fileId)
+            await PostImage.destroy({ where: { fileId } })
+            return res.sendStatus(200);
         } catch (error: any) {
             res.status(500).send({ message: error.message })
         }

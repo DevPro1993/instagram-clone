@@ -7,17 +7,24 @@ import { CreatePostDtoSchema, EditPostDtoSchema } from "../models/dtos/post/crea
 const router: Router = express.Router();
 
 router.get('/imagekit-signature', PostController.getImageKitSignature)
-router.get('/', PostController.getAll)
 router.get('/feed', PostController.getAllPostsForFeed)
+router.get('/:id', PostController.getById)
+router.get('/', PostController.getAll)
+
+
 router.post('/like/:id', PostController.likePost)
 router.post('/unlike/:id', PostController.unlikePost)
 router.post('/bookmark/:id', PostController.bookmarkPost)
 router.post('/unbookmark/:id', PostController.unbookmarkPost)
-router.get('/:id', PostController.getById)
 router.post('/', validatePayload(CreatePostDtoSchema), PostController.save)
+
 router.put('/:id', validatePayload(EditPostDtoSchema), PostController.update)
-router.delete('/', PostController.bulkDelete)
+
+router.delete('/image/:imageId', PostController.removeImagesFromPost)
 router.delete('/:id', PostController.delete)
+router.delete('/', PostController.bulkDelete)
+
+
 
 
 
