@@ -1,4 +1,4 @@
-import { Model, InferAttributes, InferCreationAttributes, DataTypes, CreationOptional, NonAttribute } from '@sequelize/core';
+import { Model, InferAttributes, InferCreationAttributes, DataTypes, CreationOptional, NonAttribute, HasManyAddAssociationsMixin, HasManyRemoveAssociationsMixin } from '@sequelize/core';
 import { Attribute, PrimaryKey, AutoIncrement, NotNull, Table, HasMany } from '@sequelize/core/decorators-legacy';
 import { User } from '../user/user.model';
 import { Comment } from '../comment/comment.model';
@@ -28,7 +28,7 @@ export class Post extends Model<InferAttributes<Post>, InferCreationAttributes<P
     // This is the foreign key
 
     declare likedByUsers?: NonAttribute<User[]>;
-    
+
     declare bookmarkedByUsers?: NonAttribute<User[]>;
 
     declare user: NonAttribute<User>;
@@ -49,6 +49,10 @@ export class Post extends Model<InferAttributes<Post>, InferCreationAttributes<P
     })
     declare comments?: NonAttribute<Comment[]>;
 
+    declare addComments: HasManyAddAssociationsMixin<Comment, Comment['id']>;
+
+    declare removeComments: HasManyRemoveAssociationsMixin<Comment, Comment['id']>;
+
     @HasMany(() => PostImage, {
         foreignKey: {
             name: 'postId',
@@ -60,5 +64,9 @@ export class Post extends Model<InferAttributes<Post>, InferCreationAttributes<P
         },
     })
     declare postImages?: NonAttribute<PostImage[]>;
+
+    declare addPostImages: HasManyAddAssociationsMixin<PostImage, PostImage['id']>;
+    
+    declare removePostImages: HasManyRemoveAssociationsMixin<PostImage, PostImage['id']>;
 
 }

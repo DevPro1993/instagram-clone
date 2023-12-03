@@ -5,6 +5,8 @@ import AsyncLocalStorageUtils from "../utils/async-local-storage/async-local-sto
 import { PostDto } from "../models/dtos/post/post.dto";
 import { CreatePostDto, EditPostDto } from "../models/dtos/post/create-or-edit-post.dto";
 import { Op } from "@sequelize/core";
+import imagekit from "../imagekit/imagekit";
+import { PostImage } from "../models/entities/post-image/post-image.model";
 
 
 export class PostController {
@@ -16,7 +18,8 @@ export class PostController {
             text: post.text,
             likedByMe: !!post.likedByUsers?.map(r => r.id).includes(currentUserId),
             bookmarkedByMe: bookmarked || !!post.bookmarkedByUsers?.map(r => r.id).includes(currentUserId),
-            createdAt: post.createdAt
+            createdAt: post.createdAt,
+            imageUrls: post.postImages?.map(({ fileId, url }) => ({ fileId, url }))
         }
     }
 
@@ -33,6 +36,9 @@ export class PostController {
                             include: [
                                 {
                                     association: 'likedByUsers'
+                                },
+                                {
+                                    association: 'postImages'
                                 }
                             ]
                         }
@@ -55,6 +61,9 @@ export class PostController {
                                     },
                                     {
                                         association: 'bookmarkedByUsers'
+                                    },
+                                    {
+                                        association: 'postImages'
                                     }
                                 ]
                             }
@@ -80,13 +89,18 @@ export class PostController {
         try {
             const userId = AsyncLocalStorageUtils.getLoggedInUserId();
             const createPostDto = req.body as CreatePostDto;
-            const post = Post.build({ ...createPostDto, userId });
-            const newPost: Post = await post.save();;
-            return res.status(201).send({ id: newPost.id });
+            const post = await Post.create({ text: createPostDto.text, userId });
+            if (createPostDto.imageTitles?.length) {
+                const postImages = (createPostDto.imageTitles).map(({ url, fileId }) => PostImage.build({ postId: post.id, url, fileId }))
+                await post.addPostImages(postImages)
+            }
+            return res.status(201).send({ postId: post.id });
         } catch (error: any) {
             res.status(500).send({ message: error.message })
         }
     }
+
+    static getImageKitSignature = async (req: Request, res: Response) => res.send(imagekit.getAuthenticationParameters())
 
 
     static update = async (req: Request, res: Response) => {

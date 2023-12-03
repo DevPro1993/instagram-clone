@@ -14,6 +14,10 @@ export class PostImage extends Model<InferAttributes<PostImage>, InferCreationAt
     @AutoIncrement
     declare id: CreationOptional<number>;
 
+    @Attribute(DataTypes.STRING)
+    @NotNull
+    declare fileId: string;
+
     @Attribute(DataTypes.TEXT)
     @NotNull
     declare url: string;
