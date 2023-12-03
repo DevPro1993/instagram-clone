@@ -8,6 +8,7 @@ const router: Router = express.Router();
 
 router.get('/imagekit-signature', PostController.getImageKitSignature)
 router.get('/feed', PostController.getAllPostsForFeed)
+router.get('/bookmarked', PostController.getAllBookarmedPosts)
 router.get('/:id', PostController.getById)
 router.get('/', PostController.getAll)
 

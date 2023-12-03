@@ -19,8 +19,41 @@ export class PostController {
             likedByMe: !!post.likedByUsers?.map(r => r.id).includes(currentUserId),
             bookmarkedByMe: bookmarked || !!post.bookmarkedByUsers?.map(r => r.id).includes(currentUserId),
             createdAt: post.createdAt,
-            imageUrls: post.postImages?.map(({ fileId, url, id }) => ({ fileId, url, id }))
+            imageUrls: post.postImages?.map(({ fileId, url, id }) => ({ fileId, url, id })),
+            likes: post.likedByUsers?.length || 0,
+            comments: post.comments?.length || 0
         }
+    }
+
+    static getAllBookarmedPosts = async (req: Request, res: Response) => {
+        try {
+            // find all people current user is following
+            const userId = AsyncLocalStorageUtils.getLoggedInUserId();
+            const user = await User.findByPk(userId, {
+                include: [
+                    {
+                        association: 'bookmarkedPosts',
+                        where: { text: { [Op.like]: `%${req.query.q || ''}%` } },
+                        include: [
+                            {
+                                association: 'likedByUsers'
+                            },
+                            {
+                                association: 'postImages'
+                            },
+                            {
+                                association: 'comments'
+                            }
+                        ]
+                    }
+                ]
+            }) as User;
+            const posts = user.bookmarkedPosts || [];
+            return res.send(posts.map(p => PostController.toDto(p, true)))
+        } catch (error: any) {
+            res.status(500).send({ message: error.message })
+        }
+
     }
 
 
@@ -28,25 +61,6 @@ export class PostController {
         try {
             // find all people current user is following
             const userId = AsyncLocalStorageUtils.getLoggedInUserId();
-            if (req.query.bookmarked === 'true') {
-                const user = await User.findByPk(userId, {
-                    include: [
-                        {
-                            association: 'bookmarkedPosts',
-                            include: [
-                                {
-                                    association: 'likedByUsers'
-                                },
-                                {
-                                    association: 'postImages'
-                                }
-                            ]
-                        }
-                    ]
-                }) as User;
-                const posts = user.bookmarkedPosts || [];
-                return res.send(posts.map(p => PostController.toDto(p, true)))
-            }
             const user = await User.findByPk(userId, {
                 include: [
                     {
@@ -55,6 +69,7 @@ export class PostController {
                         include: [
                             {
                                 association: 'posts',
+                                where: { text: { [Op.like]: `%${req.query.q || ''}%` } },
                                 include: [
                                     {
                                         association: 'likedByUsers'
@@ -64,6 +79,9 @@ export class PostController {
                                     },
                                     {
                                         association: 'postImages'
+                                    },
+                                    {
+                                        association: 'comments'
                                     }
                                 ]
                             }

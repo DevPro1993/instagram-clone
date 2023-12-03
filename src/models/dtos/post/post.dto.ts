@@ -5,6 +5,8 @@ export const PostDtoSchema = z.object({
     text: z.string(),
     likedByMe: z.boolean(),
     bookmarkedByMe: z.boolean(),
+    likes: z.number(),
+    comments: z.number(),
     createdAt: z.date(),
     imageUrls: z.array(z.object({ fileId: z.string(), url: z.string() })).optional()
 })
